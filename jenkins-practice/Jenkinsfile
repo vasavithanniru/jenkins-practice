@@ -7,6 +7,9 @@ pipeline {
         disableConcurrentBuilds()  // 
         //retry(1)  // if the job fails it will retry to run the job again specified no of times
     }
+    environment{
+        DEBUG = 'true'
+    }
     parameters{
         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
         text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
@@ -26,10 +29,13 @@ pipeline {
             }
         }
         stage('Deploy'){
-            steps{
-                sh 'This is deploy'
-            }
+            when {
+                expression {env.GIT_BRANCH != "origin/main"}
+            } 
         }
+            steps{
+                sh 'echo This is deploy'
+            }
         stage('print params'){
             steps{
                 echo " Hello $(params.PERSON)"
